@@ -15,11 +15,7 @@ def load(image_path):
         out: numpy array of shape(image_height, image_width, 3)
     """
     out = None
-
-    ### YOUR CODE HERE
-    # Use skimage io.imread
-    pass
-    ### END YOUR CODE
+    out = io.imread(image_path)
 
     return out
 
@@ -37,9 +33,7 @@ def change_value(image):
 
     out = None
 
-    ### YOUR CODE HERE
-    pass
-    ### END YOUR CODE
+    out = 0.5 * np.square(image)
 
     return out
 
@@ -55,9 +49,7 @@ def convert_to_grey_scale(image):
     """
     out = None
 
-    ### YOUR CODE HERE
-    pass
-    ### END YOUR CODE
+    out = color.rgb2gray(image)
 
     return out
 
@@ -73,10 +65,10 @@ def rgb_decomposition(image, channel):
     """
 
     out = None
-
-    ### YOUR CODE HERE
-    pass
-    ### END YOUR CODE
+    dic = {'r':0, 'g':1, 'b':2}
+    mat = np.array([[0, 1, 1], [1, 0, 1], [1, 1, 0]], dtype=np.float32)
+    rgb = np.array(image)
+    out = rgb * mat[dic[channel.lower()]]
 
     return out
 
@@ -94,9 +86,9 @@ def lab_decomposition(image, channel):
     lab = color.rgb2lab(image)
     out = None
 
-    ### YOUR CODE HERE
-    pass
-    ### END YOUR CODE
+    dic = {'l':0, 'a':1, 'b':2}
+    mat = np.array([[0, 1, 1], [1, 0, 1], [1, 1, 0]], dtype=np.float32)
+    out = lab * mat[dic[channel.lower()]]
 
     return out
 
@@ -113,10 +105,9 @@ def hsv_decomposition(image, channel='H'):
 
     hsv = color.rgb2hsv(image)
     out = None
-
-    ### YOUR CODE HERE
-    pass
-    ### END YOUR CODE
+    dic = {'h':0, 's':1, 'v':2}
+    mat = np.array([[0, 1, 1], [1, 0, 1], [1, 1, 0]], dtype=np.float32)
+    out = hsv * mat[dic[channel.lower()]]
 
     return out
 
@@ -135,8 +126,10 @@ def mix_images(image1, image2, channel1, channel2):
     """
 
     out = None
-    ### YOUR CODE HERE
-    pass
-    ### END YOUR CODE
+    image1 = rgb_decomposition(image1, channel1)
+    image2 = rgb_decomposition(image2, channel2)
+    out = np.zeros_like(image1)
+    out[:, :int(image1.shape[1]/2), :] = image1[:, :int(image1.shape[1]/2), :]
+    out[:, int(image1.shape[1]/2):, :] = image2[:, int(image1.shape[1]/2):, :]
 
     return out
