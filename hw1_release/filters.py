@@ -18,12 +18,17 @@ def conv_nested(image, kernel):
     Hi, Wi = image.shape
     Hk, Wk = kernel.shape
     out = np.zeros((Hi, Wi))
-
+    padded = zero_pad(image,Hk//2,Wk//2)
+    kernel = np.flip(np.flip(kernel, 0), 1)  # 上下翻转，在左右翻转
     ### YOUR CODE HERE
-    pass
-    ### END YOUR CODE
+    for m in range(Hi):
+        for n in range(Wi):
+            for i in range(Hk):
+                for j in range(Wk):
+                        out[m,n]+=kernel[i,j]*padded[m+i,n+j]
 
     return out
+
 
 def zero_pad(image, pad_height, pad_width):
     """ Zero-pad an image.
@@ -44,11 +49,8 @@ def zero_pad(image, pad_height, pad_width):
     """
 
     H, W = image.shape
-    out = None
-
-    ### YOUR CODE HERE
-    pass
-    ### END YOUR CODE
+    out = np.zeros(shape=(H+pad_height*2,W+pad_width*2),dtype=np.float32)
+    out[pad_height:pad_height+H,pad_width:pad_width+W]=image[:,:]
     return out
 
 
@@ -74,10 +76,15 @@ def conv_fast(image, kernel):
     Hi, Wi = image.shape
     Hk, Wk = kernel.shape
     out = np.zeros((Hi, Wi))
+    padd_H = Hk // 2
+    padd_W = Wk // 2
+    img_padd = zero_pad(image, padd_H, padd_W)
+    kernel = np.flip(np.flip(kernel, 0), 1)  # 上下翻转，在左右翻转
+    # 卷积过程
+    for i in range(Hi):
+        for j in range(Wi):
 
-    ### YOUR CODE HERE
-    pass
-    ### END YOUR CODE
+            out[i, j] = np.sum(img_padd[i:(i+Hk), j:(j+Wk)] * kernel)
 
     return out
 
@@ -114,9 +121,7 @@ def cross_correlation(f, g):
     """
 
     out = None
-    ### YOUR CODE HERE
-    pass
-    ### END YOUR CODE
+    out = conv_fast(f, g)
 
     return out
 
@@ -134,10 +139,9 @@ def zero_mean_cross_correlation(f, g):
     """
 
     out = None
-    ### YOUR CODE HERE
-    pass
-    ### END YOUR CODE
-
+    mean = np.mean(g)
+    g = np.subtract(g, mean)
+    out = cross_correlation(f,g)
     return out
 
 def normalized_cross_correlation(f, g):
@@ -154,9 +158,24 @@ def normalized_cross_correlation(f, g):
         out: numpy array of shape (Hf, Wf)
     """
 
-    out = None
-    ### YOUR CODE HERE
-    pass
-    ### END YOUR CODE
+    # out = None
+    Hk, Wk = f.shape
+    Hg, Wg = g.shape
+    paddedF = zero_pad(f, Hg // 2, Wg // 2)
+    out = np.zeros_like(f)
+    # g = np.flip(np.flip(g, 0), 1)
+    g_mean = np.mean(g)
+    g_delta = np.sqrt(np.var(g))
+    g_t = (g - g_mean) / g_delta
+
+    for m in range(Hk):
+        for n in range(Wk):
+            conv = paddedF[m:(m+Hg), n:(n+Wg)]
+            f_mean = np.mean(conv)
+            f_delta = np.sqrt(np.var(conv))
+            f_t = (paddedF[m:(m+Hg), n:(n+Wg)] - f_mean)/f_delta
+            out[m, n] = np.sum(f_t * g_t)
+
+    print('end')
 
     return out
