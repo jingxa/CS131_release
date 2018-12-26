@@ -14,7 +14,13 @@
 
 # hw 4
 
+- [homework-4](https://jingxa.github.io/2018/11/22/CS131-Homework-4/)
+
 # hw 5 
+- [homework-5](https://jingxa.github.io/2018/11/22/CS131-Homework-5/)
+
+# hw 6
+- [homework-6](https://jingxa.github.io/2018/11/22/CS131-Homework-6/)
 
 # 参考资料
 
